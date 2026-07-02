@@ -1,0 +1,188 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&display=swap");
+
+:root {
+  color-scheme: light;
+  --paper: #ffffff;
+  --dot: rgba(24, 33, 42, 0.075);
+  --shadow: rgba(17, 21, 26, 0.05);
+  --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle, var(--dot) 1px, transparent 1.25px) 0 0 / 18px 18px,
+    var(--paper);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.collage-stage {
+  position: relative;
+  width: 100vw;
+  height: 220vh;
+  min-height: 1320px;
+  overflow: visible;
+}
+
+.collage-viewport {
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 620px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, rgba(20, 28, 36, 0.055) 1px, transparent 1.2px) 0 0 / 18px 18px,
+    #fff;
+}
+
+.collage-layer {
+  position: absolute;
+  inset: clamp(10px, 2.2vw, 34px);
+}
+
+.collage-item {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  z-index: var(--z);
+  width: var(--balanced-width, 76px);
+  --scroll-opacity: 1;
+  opacity: 0;
+  transform:
+    translate3d(
+      calc(-50% + var(--tx, 0px) + var(--scroll-x, 0px)),
+      calc(-50% + var(--ty, 0px) + var(--scroll-y, 0px)),
+      0
+    )
+    rotate(calc(var(--rot) + var(--tilt, 0deg)))
+    scale(var(--scale, 1));
+  transform-origin: 50% 50%;
+  filter:
+    drop-shadow(0 12px 18px var(--shadow))
+    drop-shadow(0 1px 2px rgba(17, 21, 26, 0.04));
+  transition:
+    opacity var(--fade) ease-out var(--delay),
+    transform 520ms var(--ease-out),
+    filter 260ms ease;
+  will-change: transform, opacity;
+  pointer-events: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.collage-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.collage-item.is-visible {
+  opacity: var(--scroll-opacity, 1);
+}
+
+body.is-ready .collage-item {
+  cursor: grab;
+  pointer-events: auto;
+}
+
+body.is-ready .collage-item:hover {
+  --scale: 1.035;
+}
+
+body.is-ready .collage-item.is-dragging {
+  --scale: 1.085;
+  cursor: grabbing;
+  filter:
+    drop-shadow(0 18px 24px rgba(17, 21, 26, 0.08))
+    drop-shadow(0 4px 8px rgba(17, 21, 26, 0.06));
+  transition:
+    opacity var(--fade) ease-out var(--delay),
+    filter 160ms ease;
+}
+
+.scroll-message {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1000;
+  width: calc(92vw + (108vw * (1 - var(--message-progress, 0))));
+  max-width: 200vw;
+  margin: 0;
+  color: #121212;
+  font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+  font-size: 60px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  opacity: var(--message-opacity, 0);
+  pointer-events: none;
+  transform: translate3d(-50%, calc(-50% + (200vw * (1 - var(--message-progress, 0)))), 0);
+  transition:
+    opacity 1000ms ease,
+    transform 1000ms var(--ease-out),
+    width 1000ms var(--ease-out);
+  will-change: transform, opacity;
+}
+
+@media (max-width: 760px) {
+  .collage-stage {
+    width: 100vw;
+    height: 238vh;
+    min-height: 1440px;
+  }
+
+  .collage-viewport {
+    min-height: 640px;
+  }
+
+  .collage-layer {
+    inset: 18px;
+  }
+
+  .collage-item {
+    width: var(--balanced-width, 64px);
+  }
+
+  .scroll-message {
+    width: calc(94vw + (106vw * (1 - var(--message-progress, 0))));
+    font-size: 60px;
+    line-height: 0.96;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collage-item {
+    transition: opacity 180ms ease;
+  }
+
+  .scroll-message {
+    transition: none;
+  }
+
+  body.is-ready .collage-item:hover,
+  body.is-ready .collage-item.is-dragging {
+    --scale: 1;
+  }
+}
